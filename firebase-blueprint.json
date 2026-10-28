@@ -1,0 +1,96 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile with role assignment, wallet balance, and loyalty points",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "maxLength": 128 },
+        "email": { "type": "string", "format": "email", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 100 },
+        "role": { "type": "string", "enum": ["admin", "staff", "customer"] },
+        "loyaltyPoints": { "type": "number" },
+        "membershipTier": { "type": "string", "enum": ["regular", "vip"] },
+        "walletBalance": { "type": "number" },
+        "phoneNumber": { "type": "string", "maxLength": 20 },
+        "address": { "type": "string", "maxLength": 200 },
+        "birthDate": { "type": "string" },
+        "gender": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["uid", "email", "name", "role"]
+    },
+    "Slot": {
+      "title": "Parking Slot",
+      "description": "Individual parking spot in the garage",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "slotNumber": { "type": "string", "maxLength": 20 },
+        "zoneId": { "type": "string", "maxLength": 64 },
+        "zoneName": { "type": "string", "maxLength": 50 },
+        "type": { "type": "string", "enum": ["car_standard", "car_vip", "motorbike", "electric"] },
+        "status": { "type": "string", "enum": ["available", "occupied", "reserved"] },
+        "currentTicketId": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "slotNumber", "zoneId", "type", "status"]
+    },
+    "Ticket": {
+      "title": "Parking Ticket",
+      "description": "Active or completed parking transaction log",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "slotId": { "type": "string", "maxLength": 64 },
+        "slotNumber": { "type": "string", "maxLength": 20 },
+        "licensePlate": { "type": "string", "maxLength": 20 },
+        "vehicleType": { "type": "string", "enum": ["car", "suv", "sedan", "motorbike", "electric"] },
+        "isVip": { "type": "boolean" },
+        "customerName": { "type": "string", "maxLength": 100 },
+        "phoneNumber": { "type": "string", "maxLength": 20 },
+        "checkInTime": { "type": "string" },
+        "checkOutTime": { "type": "string" },
+        "status": { "type": "string", "enum": ["active", "completed", "reserved"] },
+        "fee": { "type": "number" },
+        "paymentMethod": { "type": "string", "enum": ["cash", "transfer", "wallet"] },
+        "paymentStatus": { "type": "string", "enum": ["paid"] },
+        "pointsEarned": { "type": "number" },
+        "staffId": { "type": "string", "maxLength": 128 }
+      },
+      "required": ["id", "slotId", "licensePlate", "vehicleType", "checkInTime", "status"]
+    },
+    "WalletTransaction": {
+      "title": "Wallet Transaction",
+      "description": "Logs for top-up and parking payment transactions",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "userName": { "type": "string", "maxLength": 100 },
+        "type": { "type": "string", "enum": ["topup", "payment"] },
+        "amount": { "type": "number" },
+        "description": { "type": "string", "maxLength": 255 },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "userId", "userName", "type", "amount", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles"
+    },
+    "/slots/{slotId}": {
+      "schema": "Slot",
+      "description": "Parking slots inventory"
+    },
+    "/tickets/{ticketId}": {
+      "schema": "Ticket",
+      "description": "Parking session tickets"
+    },
+    "/wallet_transactions/{transactionId}": {
+      "schema": "WalletTransaction",
+      "description": "Wallet top-up and payment transactions log"
+    }
+  }
+}

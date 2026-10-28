@@ -1,0 +1,8 @@
+{
+  "name": "Remix Remix Remix Smart Parking Management System",
+  "description": "Quản lý Bãi đỗ xe Thông minh với phân quyền Admin, Nhân viên, Khách hàng, sơ đồ real-time và kiểm tra quy tắc xe.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
