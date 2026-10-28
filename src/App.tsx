@@ -2448,6 +2448,37 @@ export default function App() {
 
               {/* Customer Right Side Widgets */}
               <div className="flex items-center gap-3 shrink-0">
+                {/* Real-time stats pills for customer */}
+                <div className="hidden xl:flex items-center gap-2.5 bg-slate-950/90 px-3 py-1.5 rounded-xl border border-emerald-500/30 text-xs shadow-inner">
+                  <div className="flex items-center gap-1">
+                    <span className="text-slate-400">Tổng ô:</span>
+                    <span className="font-bold text-white">{totalSlotsCount}</span>
+                  </div>
+                  <div className="w-px h-3.5 bg-slate-800"></div>
+                  <div className="flex items-center gap-1">
+                    <span className="text-emerald-400">Trống:</span>
+                    <span className="font-bold text-emerald-400">{availableSlotsCount}</span>
+                  </div>
+                  <div className="w-px h-3.5 bg-slate-800"></div>
+                  <div className="flex items-center gap-1">
+                    <span className="text-amber-400">Chờ duyệt:</span>
+                    <span className="font-bold text-amber-400">{pendingSlotsCount}</span>
+                  </div>
+                  <div className="w-px h-3.5 bg-slate-800"></div>
+                  <div className="flex items-center gap-1">
+                    <span className="text-rose-400">Đang đỗ:</span>
+                    <span className="font-bold text-rose-400">{occupiedSlotsCount}</span>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => setShowQuickCheckOutListModal(true)}
+                  title="Lấy xe ra khỏi bãi (Check-out)"
+                  className="bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shrink-0 shadow-sm"
+                >
+                  <Car className="w-3.5 h-3.5" /> Lấy xe ra
+                </button>
+
                 <button
                   onClick={() => setShowNotificationsModal(true)}
                   title="Trung tâm thông báo"
@@ -6018,12 +6049,32 @@ export default function App() {
             </div>
 
             <div className="space-y-2 max-h-80 overflow-y-auto">
-              {tickets.filter(t => !t.checkOutTime).length === 0 ? (
+              {tickets.filter(t => {
+                if (t.checkOutTime) return false;
+                if (currentUser?.role === 'customer') {
+                  const isMyTicket = 
+                    t.userId === currentUser.uid || 
+                    (currentUser.name && t.customerName && t.customerName.trim().toLowerCase() === currentUser.name.trim().toLowerCase()) ||
+                    (currentUser.phoneNumber && t.phoneNumber && t.phoneNumber === currentUser.phoneNumber);
+                  return isMyTicket;
+                }
+                return true;
+              }).length === 0 ? (
                 <div className="text-center py-8 text-slate-400 text-xs">
-                  Không có xe nào đang đỗ trong bãi.
+                  {currentUser?.role === 'customer' ? 'Bạn chưa có xe nào đang đỗ trong bãi.' : 'Không có xe nào đang đỗ trong bãi.'}
                 </div>
               ) : (
-                tickets.filter(t => !t.checkOutTime).map(t => (
+                tickets.filter(t => {
+                  if (t.checkOutTime) return false;
+                  if (currentUser?.role === 'customer') {
+                    const isMyTicket = 
+                      t.userId === currentUser.uid || 
+                      (currentUser.name && t.customerName && t.customerName.trim().toLowerCase() === currentUser.name.trim().toLowerCase()) ||
+                      (currentUser.phoneNumber && t.phoneNumber && t.phoneNumber === currentUser.phoneNumber);
+                    return isMyTicket;
+                  }
+                  return true;
+                }).map(t => (
                   <div key={t.id} className="bg-slate-950 p-3.5 rounded-xl border border-slate-800 flex items-center justify-between text-xs">
                     <div>
                       <div className="flex items-center gap-2 mb-1">
@@ -6039,7 +6090,7 @@ export default function App() {
                         setSelectedTicketForCheckOut(t);
                         setShowCheckOutModal(true);
                       }}
-                      className="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold px-3.5 py-2 rounded-lg transition shadow-md shadow-emerald-500/20"
+                      className="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold px-3.5 py-2 rounded-lg transition shadow-md shadow-emerald-500/20 cursor-pointer"
                     >
                       Lấy xe ra
                     </button>
